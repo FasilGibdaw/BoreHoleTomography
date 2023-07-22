@@ -1,4 +1,4 @@
-# BoreHoleTomography
+# Bore hole tomography
 
 This is a report about borehole tomography based on Bayesian inversion approach. 
 

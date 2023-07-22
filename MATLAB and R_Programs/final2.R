@@ -1,6 +1,6 @@
 ## R script for Tomography
 # by Fasil Tesema, November 28 2013, Dessie/Kombolcha, Ethiopia.
-# Phd student at Bahir Dar University, Bahir Dar, Ethiopia
+# Bahir Dar University, Bahir Dar, Ethiopia
 # rm(list=(ls()))# clear all the variables
 #setwd("C:/Users/Fasilo/Desktop/MATLAB and R_programs/")
 A=as.matrix(read.table('ima.txt'))# the defined unknown 

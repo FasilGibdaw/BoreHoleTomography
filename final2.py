@@ -5,9 +5,9 @@ from diff_hor import diff_hor
 from diff_ver import diff_ver
 import cv2
 # Load the input image and preprocess it
-#A = plt.imread('endi5.png').astype(float)
-A = cv2.imread('endi5.png',cv2.IMREAD_UNCHANGED)
-ima = -(A[:, :, 0] - 256)  # true model
+A = plt.imread('endi5.png').astype(float)
+# A = cv2.imread('endi5.png',cv2.IMREAD_UNCHANGED)
+ima = -A[:, :, 0]   # true model
 dx, dy = 1, 1
 ima = ima[::dx, ::dy]  # sampled model
 ny, nx = ima.shape
@@ -24,21 +24,26 @@ ymin, ymax = y.min(), y.max()
 side1 = 5  # Number of receivers along side 1 at the surface of the ground
 rangex = xmax - xmin
 rangey = ymax - ymin
-Rxy1 = np.array([(xmin + ((np.arange(1, side1 + 1) * rangex) / (side1 + 1)), ymax * np.ones(side1))]).T
+Rxy1 = np.array([(xmin + ((np.arange(1, side1 + 1) * rangex) /
+                (side1 + 1)), ymax * np.ones(side1))]).T
 side2 = 5  # Number of receivers along side 2 (borehole 2)
-Rxy2 = np.array([(xmax * np.ones(side2), ymin + ((np.arange(1, side2 + 1) * rangey) / (side2 + 1)))], dtype=float).T
+Rxy2 = np.array([(xmax * np.ones(side2), ymin +
+                ((np.arange(1, side2 + 1) * rangey) / (side2 + 1)))], dtype=float).T
 Rxy = np.vstack((Rxy1, Rxy2))  # Receiver positions along side 1 and 2
 
 side3 = 5  # Number of transmitters along side 3 (borehole 1)
-Txy1 = np.array([(xmin * np.ones(side3), ymin + ((np.arange(1, side3 + 1) * rangey) / (side3 + 1)))], dtype=float).T
+Txy1 = np.array([(xmin * np.ones(side3), ymin +
+                ((np.arange(1, side3 + 1) * rangey) / (side3 + 1)))], dtype=float).T
 side4 = 0
-Txy2 = np.array([(xmin + ((np.arange(1, side4 + 1) * rangex) / (side4 + 1)), ymin * np.ones(side4))]).T
+Txy2 = np.array([(xmin + ((np.arange(1, side4 + 1) * rangex) /
+                (side4 + 1)), ymin * np.ones(side4))]).T
 Txy = np.vstack((Txy1, Txy2))
 
 # Construct rays with corresponding x and y coordinates
 b = 0
 N_ray = (side1 + side2) * (side3 + side4)
-ray = np.zeros((N_ray, 4))  # 4 columns for p1(x1, y1) and p2(x2, y2) of the ray
+# 4 columns for p1(x1, y1) and p2(x2, y2) of the ray
+ray = np.zeros((N_ray, 4))
 for t in range(side3 + side4):
     for r in range(side1 + side2):
         ray[b, 0] = Txy[t, 0]  # x components of p1
@@ -53,12 +58,15 @@ pixel = np.arange(nx * ny) + 1  # number of pixels in one vector
 Nr = 3000  # number of discretization along each ray
 G = np.zeros((N_ray, len(pixel)))  # initializing the theory matrix
 for n in range(N_ray):
-    d = np.sqrt((ray[n, 0] - ray[n, 2]) ** 2 + (ray[n, 1] - ray[n, 3]) ** 2)  # length of a ray
+    d = np.sqrt((ray[n, 0] - ray[n, 2]) ** 2 +
+                (ray[n, 1] - ray[n, 3]) ** 2)  # length of a ray
     dr = d / Nr  # step length of a ray
     drx = (ray[n, 2] - ray[n, 0]) / Nr  # x coordinate of step length
     dry = (ray[n, 3] - ray[n, 1]) / Nr  # y coordinate of step length
-    xp = ray[n, 0] + np.arange(1, Nr + 1) * drx  # number of x coordinates along a ray
-    yp = ray[n, 1] + np.arange(1, Nr + 1) * dry  # number of y coordinates along a ray
+    # number of x coordinates along a ray
+    xp = ray[n, 0] + np.arange(1, Nr + 1) * drx
+    # number of y coordinates along a ray
+    yp = ray[n, 1] + np.arange(1, Nr + 1) * dry
     ind_x = np.floor(((xp - xmin) / rangex) * (nx - 1)).astype(int)
     ind_y = np.floor(((yp - ymin) / rangey) * (ny - 1)).astype(int)
     index = (ind_y - 1) * nx + ind_x
@@ -83,12 +91,15 @@ pixel_1 = np.arange(nx1 * ny1) + 1  # number of pixels in one vector
 # Calculating the theory matrix for the inversion problem
 G1 = np.zeros((N_ray, len(pixel_1)))  # initializing the theory matrix
 for n in range(N_ray):
-    d = np.sqrt((ray[n, 0] - ray[n, 2]) ** 2 + (ray[n, 1] - ray[n, 3]) ** 2)  # length of a ray
+    d = np.sqrt((ray[n, 0] - ray[n, 2]) ** 2 +
+                (ray[n, 1] - ray[n, 3]) ** 2)  # length of a ray
     dr = d / Nr  # step length of a ray
     drx = (ray[n, 2] - ray[n, 0]) / Nr  # x coordinate of step length
     dry = (ray[n, 3] - ray[n, 1]) / Nr  # y coordinate of step length
-    xp = ray[n, 0] + np.arange(1, Nr + 1) * drx  # number of x coordinates along a ray
-    yp = ray[n, 1] + np.arange(1, Nr + 1) * dry  # number of y coordinates along a ray
+    # number of x coordinates along a ray
+    xp = ray[n, 0] + np.arange(1, Nr + 1) * drx
+    # number of y coordinates along a ray
+    yp = ray[n, 1] + np.arange(1, Nr + 1) * dry
     ind_x = np.floor(((xp - x1min) / rangex1) * (nx1 - 1)).astype(int)
     ind_y = np.floor(((yp - y1min) / rangey1) * (ny1 - 1)).astype(int)
     index = (ind_y - 1) * nx1 + ind_x
@@ -99,11 +110,15 @@ for n in range(N_ray):
 # Constructing the prior (difference prior) and MAP estimate
 e = 0.2 * E
 sigma = np.var(e)  # assumed measurement error covariance
-L1=diff_ver(nx1,ny1);#function to compute difference matrix along horizontal(L1)  
-L2=diff_hor(nx1,ny1);#function to compute difference matrix along vertical(L2)
+# function to compute difference matrix along horizontal(L1)
+L1 = diff_ver(nx1, ny1)
+# function to compute difference matrix along vertical(L2)
+L2 = diff_hor(nx1, ny1)
 LL = np.vstack((L2, L1))  # difference matrix (horizontal + vertical)
-C = 1.2 * np.random.randn(2 * nx1 * ny1)  # virtual measurement error (uncertainty in the difference)
-cc = np.var(C) * np.eye(2 * nx1 * ny1)  # covariance of the uncertainty in the difference
+# virtual measurement error (uncertainty in the difference)
+C = 1.2 * np.random.randn(2 * nx1 * ny1)
+# covariance of the uncertainty in the difference
+cc = np.var(C) * np.eye(2 * nx1 * ny1)
 # Xm = np.linalg.inv((G1.T @ np.linalg.inv(sigma * np.eye(len(m))) @ G1) + LL.T @ np.linalg.inv(cc) @ LL) @ (G1.T @ np.linalg.inv(sigma * np.eye(len(m))))
 # tolerance = 1e-8
 # U, s, VT = np.linalg.svd((G1.T @ np.linalg.inv(sigma * np.eye(len(m))) @ G1) + LL.T @ np.linalg.inv(cc) @ LL)
@@ -111,10 +126,12 @@ cc = np.var(C) * np.eye(2 * nx1 * ny1)  # covariance of the uncertainty in the d
 # S_inv[:len(s), :len(s)] = np.diag(1.0 / s)
 # Xm = VT.T @ S_inv @ U.T @ (G1.T @ np.linalg.inv(sigma * np.eye(len(m))) @ m)
 # Xm = Xm.reshape(ny1, nx1)  # Reshape Xm to 2D
-Xm = np.linalg.inv((G1.T @ np.linalg.inv(sigma * np.eye(len(m))) @ G1) + LL.T @ np.linalg.inv(cc) @ LL) @ (G1.T @ np.linalg.inv(sigma * np.eye(len(m))))
+Xm = np.linalg.inv((G1.T @ np.linalg.inv(sigma * np.eye(len(m))) @ G1) + LL.T @
+                   np.linalg.inv(cc) @ LL) @ (G1.T @ np.linalg.inv(sigma * np.eye(len(m))))
 XmapN = Xm @ m  # MAP estimate
 XmapN = XmapN.reshape(ny1, nx1)  # back to the original dimension (2D)
-ima = ima.reshape(ny, nx)  # back to the original dimension (2D) of the assumed true model
+# back to the original dimension (2D) of the assumed true model
+ima = ima.reshape(ny, nx)
 
 # Graphics
 plt.figure(figsize=(15, 5))

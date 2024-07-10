@@ -83,10 +83,10 @@ for n=1:N_ray
     ind_x=1+floor(((xp-x1min)/(rangex1))*(nx1-1));
     ind_y=1+floor(((yp-y1min)/(rangey1))*(ny1-1));
     index=(ind_y-1)*nx1+ind_x;
-    dd=unique(index);
-    cc=hist(index,dd);
-    l_ind=cc*dr(n);
-    G1(n,dd)=G1(n,dd)+l_ind;
+    dd1=unique(index);
+    cc1=hist(index,dd1);
+    l_ind=cc1*dr(n);
+    G1(n,dd1)=G1(n,dd1)+l_ind;
 end
 %% Constructing the prior (difference prior) and MAP estimate
 e=0.2*E;sigma=var(e); % assumed measurement error covariance
